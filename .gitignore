@@ -25,3 +25,4 @@ log
 .idea
 
 examples/checkpoints/*
+examples/data/*
