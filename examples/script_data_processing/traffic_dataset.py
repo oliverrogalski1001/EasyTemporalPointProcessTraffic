@@ -19,13 +19,20 @@ def format_data_test(seq_len: datetime.timedelta, df: pd.DataFrame, k_events: in
         last_event_time = datetime.timedelta()
         last_same_event = [datetime.timedelta() for _ in range(k_events)]
         # iterate through each event in current sequence
+        j = 1
+        offset = datetime.timedelta()
+        delta = datetime.timedelta(seconds=1)
         for i, row in df[df["seq_id"] == seq_id].iterrows():
             diff = (
                 row["timediff_start"] % seq_len
-            )  # get time difference from start of week
+            ) + offset # get time difference from start of week
+            if datetime_to_hours(diff - last_event_time) == 0.0:
+                offset += delta
+                diff += delta
+                
             cur_seq.append(
                 {  # append event dictionary to sequence
-                    "idx_event": i + 1,
+                    "idx_event": j,
                     "time_since_last_event": datetime_to_hours(diff - last_event_time),
                     "time_since_last_same_event": datetime_to_hours(
                         diff - last_same_event[row["severity_level"]]
@@ -36,6 +43,7 @@ def format_data_test(seq_len: datetime.timedelta, df: pd.DataFrame, k_events: in
             )
             last_same_event[row["severity_level"]] = diff
             last_event_time = diff
+            j += 1
 
         total_seqs.append(cur_seq)
 
@@ -99,7 +107,7 @@ if __name__ == "__main__":
     train_dict, test_dict, dev_dict = data_split(df, 0.8, 0.1, 0.1, datetime.timedelta(days=7), k_events, seed=1234) # use weeks as sequence
     print("number of sequences:", len(train_dict), len(test_dict), len(dev_dict))
 
-    data_out_path = "../data/traffic"
+    data_out_path = "../data/traffic_week"
     # use pickle to export data
     with open(f"{data_out_path}/train.pkl", "wb") as out:
         data_dict = {"dim_process": k_events, "train": train_dict}

@@ -112,6 +112,8 @@ class RunnerConfig(Config):
         self.base_config.specs['saved_log_dir'] = os.path.join(log_folder, 'log')
         self.base_config.specs['output_config_dir'] = os.path.join(log_folder,
                                                                    f'{self.base_config.exp_id}_output.yaml')
+
+        logger.critical('hello')
         
         if self.trainer_config.use_tfb:
             self.base_config.specs['tfb_train_dir'] = create_folder(log_folder, 'tfb_train')
