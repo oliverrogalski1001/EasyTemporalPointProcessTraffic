@@ -10,7 +10,7 @@ def main():
     parser.add_argument('--config_dir', type=str, required=False, default='configs/thp_traffic.yaml',
                         help='Dir of configuration yaml to train and evaluate the model.')
 
-    parser.add_argument('--experiment_id', type=str, required=False, default='thp_train',
+    parser.add_argument('--experiment_id', type=str, required=False, default='thp_gen',
                         help='Experiment id in the config file.')
 
     args = parser.parse_args()
