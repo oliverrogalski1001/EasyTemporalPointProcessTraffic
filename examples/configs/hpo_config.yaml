@@ -29,7 +29,7 @@ NHP_train:
     base_dir: './checkpoints/'
   trainer_config:
     batch_size: 256
-    max_epoch: 200
+    max_epoch: 15
     shuffle: False
     optimizer: adam
     learning_rate: 1.e-3

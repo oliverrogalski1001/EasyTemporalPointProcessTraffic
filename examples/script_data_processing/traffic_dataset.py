@@ -97,17 +97,11 @@ def data_split(
     )
 
 
-if __name__ == "__main__":
-    k_events = 3
-    csv_path = "../data/traffic_raw/CleanCrashData.csv"
+def write_data(k_events, csv_path, data_out_path, train, test, dev, seq_len):
     df = pd.read_csv(csv_path)
-    # train_dict, test_dict, dev_dict = data_split(
-        # df, 1, 0, 0, None, k_events, seed=1234
-    # )  # use entire set as a sequence
-    train_dict, test_dict, dev_dict = data_split(df, 0.8, 0.1, 0.1, datetime.timedelta(days=7), k_events, seed=1234) # use weeks as sequence
+    train_dict, test_dict, dev_dict = data_split(df, train, test, dev, seq_len, k_events, seed=1234) # use weeks as sequence
     print("number of sequences:", len(train_dict), len(test_dict), len(dev_dict))
 
-    data_out_path = "../data/traffic_week"
     # use pickle to export data
     with open(f"{data_out_path}/train.pkl", "wb") as out:
         data_dict = {"dim_process": k_events, "train": train_dict}
@@ -120,3 +114,11 @@ if __name__ == "__main__":
     with open(f"{data_out_path}/dev.pkl", "wb") as out:
         data_dict = {"dim_process": k_events, "dev": dev_dict}
         pickle.dump(data_dict, out, pickle.HIGHEST_PROTOCOL)
+
+
+if __name__ == "__main__":
+    k_events = 3
+    csv_path = "../data/traffic_raw/CleanCrashData.csv"
+    data_out_path = "../data/"
+    write_data(k_events, csv_path, data_out_path + "traffic_week", 0.8, 0.1, 0.1, datetime.timedelta(days=7))
+    write_data(k_events, csv_path, data_out_path + "traffic_all", 1.0, 0, 0, None)
