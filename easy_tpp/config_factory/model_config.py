@@ -215,6 +215,7 @@ class ModelConfig(Config):
         self.model_id = kwargs.get('model_id', None)
         self.pretrained_model_dir = kwargs.get('pretrained_model_dir', None)
         self.gpu = kwargs.get('gpu', -1)
+        self.tcn_kernel_size = kwargs.get("tcn_kernel_size", 2)
         self.model_specs = kwargs.get('model_specs', {})
 
     def get_yaml_config(self):

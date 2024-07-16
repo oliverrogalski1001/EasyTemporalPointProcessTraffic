@@ -4,6 +4,7 @@ import torch.nn as nn
 from easy_tpp.model.torch_model.torch_baselayer import EncoderLayer, MultiHeadAttention, TimePositionalEncoding
 from easy_tpp.model.torch_model.torch_basemodel import TorchBaseModel
 
+from easy_tpp.model.torch_model.tcn import TemporalConvNet
 
 class THP(TorchBaseModel):
     """Torch implementation of Transformer Hawkes Process, ICML 2020, https://arxiv.org/abs/2002.09291.
@@ -25,7 +26,8 @@ class THP(TorchBaseModel):
         self.n_head = model_config.num_heads
         self.dropout = model_config.dropout_rate
 
-        self.layer_temporal_encoding = TimePositionalEncoding(self.d_model, device=self.device)
+        # self.layer_temporal_encoding = TimePositionalEncoding(self.d_model, device=self.device)
+        self.layer_temporal_encoding = TemporalConvNet(num_inputs=1, num_channels=[self.d_model], kernel_size=model_config.tcn_kernel_size, device=self.device)
 
         self.factor_intensity_base = torch.empty([1, self.num_event_types], device=self.device)
         self.factor_intensity_decay = torch.empty([1, self.num_event_types], device=self.device)
@@ -58,7 +60,9 @@ class THP(TorchBaseModel):
             tensor: hidden states at event times.
         """
         # [batch_size, seq_len, hidden_size]
-        tem_enc = self.layer_temporal_encoding(time_seqs)
+        # print(time_seqs.size())
+        tem_enc = self.layer_temporal_encoding(torch.unsqueeze(time_seqs, 1))
+        # tem_enc = self.layer_temporal_encoding(time_seqs)
         enc_output = self.layer_type_emb(type_seqs)
 
         # [batch_size, seq_len, hidden_size]

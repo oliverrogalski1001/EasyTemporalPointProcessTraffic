@@ -7,10 +7,10 @@ from easy_tpp.runner import Runner
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument('--config_dir', type=str, required=False, default='configs/thp_traffic.yaml',
+    parser.add_argument('--config_dir', type=str, required=False, default='configs/thp_tcn.yaml',
                         help='Dir of configuration yaml to train and evaluate the model.')
 
-    parser.add_argument('--experiment_id', type=str, required=False, default='thp_gen',
+    parser.add_argument('--experiment_id', type=str, required=False, default='thp_train',
                         help='Experiment id in the config file.')
 
     args = parser.parse_args()
