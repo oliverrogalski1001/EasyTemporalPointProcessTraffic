@@ -1,5 +1,4 @@
 from collections import OrderedDict
-
 from easy_tpp.runner.base_runner import Runner
 from easy_tpp.utils import RunnerPhase, logger, MetricsHelper, MetricsTracker, concat_element, save_pickle
 from easy_tpp.utils.const import Backend
@@ -217,6 +216,14 @@ class TPPRunner(Runner):
 
         if pred_exists and label_exists:
             metrics_dict.update(self.metric_functions(epoch_pred, epoch_label, seq_mask=epoch_mask))
+        
+        # if phase in [RunnerPhase.VALIDATE]:
+        #     cont_table = [[0] * 3 for _ in range(3)]
+        #     for pred_batch, label_batch in zip(epoch_pred[1], epoch_label[1]):
+        #         for pred, label in zip(pred_batch, label_batch):
+        #             if pred != 3 and label != 3:
+        #                 cont_table[int(pred)][int(label)] += 1
+        #     print(cont_table)
 
         if phase == RunnerPhase.PREDICT:
             metrics_dict.update({'pred': epoch_pred, 'label': epoch_label})

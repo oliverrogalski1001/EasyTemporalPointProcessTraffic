@@ -1,0 +1,115 @@
+pipeline_config_id: runner_config
+
+data:
+  traffic:
+    data_format: pkl
+    train_dir: ./data/traffic_month/train.pkl
+    valid_dir: ./data/traffic_month/dev.pkl
+    test_dir: ./data/traffic_month/test.pkl
+    data_specs:
+      num_event_types: 3
+      pad_token_id: 3
+      padding_side: right
+
+thp_train:
+  base_config:
+    stage: train
+    backend: torch
+    dataset_id: traffic
+    runner_id: std_tpp
+    model_id: THP
+    base_dir: './checkpoints/thp_tcn_month/'
+  trainer_config:
+    batch_size: 1
+    max_epoch: 300
+    shuffle: True
+    optimizer: adam
+    learning_rate: 1.e-4
+    valid_freq: 1
+    use_tfb: True
+    metrics: [ 'acc', 'rmse' ]
+    seed: 1234
+    tcn_kernel_size: 4
+    gpu: 0
+  model_config:
+    hidden_size: 64
+    time_emb_size: 64
+    num_layers: 3
+    num_heads: 4
+    mc_num_sample_per_step: 20
+    loss_integral_num_sample_per_step: 20
+    use_ln: False
+    thinning:
+      num_seq: 10
+      num_sample: 1
+      num_exp: 500 # number of i.i.d. Exp(intensity_bound) draws at one time in thinning algorithm
+      look_ahead_time: 10
+      patience_counter: 5 # the maximum iteration used in adaptive thinning
+      over_sample_rate: 5
+      num_samples_boundary: 5
+      dtime_max: 5
+      num_step_gen: 1
+
+thp_eval:
+  base_config:
+    stage: eval
+    backend: torch
+    dataset_id: traffic
+    runner_id: std_tpp
+    base_dir: './checkpoints/thp_eval'
+    model_id: THP
+  trainer_config:
+    batch_size: 1
+    max_epoch: 10
+    gpu: 0
+  model_config:
+    hidden_size: 64
+    time_emb_size: 64
+    num_layers: 3
+    num_heads: 4
+    mc_num_sample_per_step: 20
+    loss_integral_num_sample_per_step: 20
+    use_ln: False
+    pretrained_model_dir: ./checkpoints/thp_tcn_month/best/models/saved_model  # must provide this dir
+    thinning:
+      num_seq: 10
+      num_sample: 1
+      num_exp: 500 # number of i.i.d. Exp(intensity_bound) draws at one time in thinning algorithm
+      look_ahead_time: 10
+      patience_counter: 5 # the maximum iteration used in adaptive thinning
+      over_sample_rate: 5
+      num_samples_boundary: 5
+      dtime_max: 5
+
+# thp_gen:
+#   base_config:
+#     stage: gen
+#     backend: torch
+#     dataset_id: traffic
+#     runner_id: std_tpp
+#     base_dir: './checkpoints/thp_gen'
+#     model_id: THP
+#   trainer_config:
+#     batch_size: 1
+#     max_epoch: 1
+#     gpu: -1
+#   model_config:
+#     hidden_size: 128
+#     time_emb_size: 64
+#     num_layers: 4
+#     num_heads: 4
+#     mc_num_sample_per_step: 20
+#     loss_integral_num_sample_per_step: 20
+#     use_ln: False
+#     pretrained_model_dir: ./checkpoints/thp/50epoch_base/models/saved_model  # must provide this dir
+#     thinning:
+#       num_seq: 10
+#       num_sample: 1
+#       num_exp: 500 # number of i.i.d. Exp(intensity_bound) draws at one time in thinning algorithm
+#       look_ahead_time: 10
+#       patience_counter: 5 # the maximum iteration used in adaptive thinning
+#       over_sample_rate: 5
+#       num_samples_boundary: 5
+#       dtime_max: 5
+#       num_step_gen: 10
+

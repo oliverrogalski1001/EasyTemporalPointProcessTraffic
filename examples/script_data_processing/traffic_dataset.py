@@ -120,5 +120,6 @@ if __name__ == "__main__":
     k_events = 3
     csv_path = "../data/traffic_raw/CleanCrashData.csv"
     data_out_path = "../data/"
-    write_data(k_events, csv_path, data_out_path + "traffic_week", 0.8, 0.1, 0.1, datetime.timedelta(days=7))
-    write_data(k_events, csv_path, data_out_path + "traffic_all", 1.0, 0, 0, None)
+    write_data(k_events, csv_path, data_out_path + "traffic_month", 0.8, 0.1, 0.1, datetime.timedelta(weeks=4))
+    # write_data(k_events, csv_path, data_out_path + "traffic_week", 0.8, 0.1, 0.1, datetime.timedelta(days=7))
+    # write_data(k_events, csv_path, data_out_path + "traffic_all", 1.0, 0, 0, None)

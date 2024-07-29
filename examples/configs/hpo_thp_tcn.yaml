@@ -1,11 +1,11 @@
-pipeline_config_id: runner_config
+pipeline_config_id: hpo_runner_config
 
 data:
   traffic:
     data_format: pkl
-    train_dir: ./data/traffic_week/train.pkl
-    valid_dir: ./data/traffic_week/dev.pkl
-    test_dir: ./data/traffic_week/test.pkl
+    train_dir: ./data/traffic_month/train.pkl
+    valid_dir: ./data/traffic_month/dev.pkl
+    test_dir: ./data/traffic_month/test.pkl
     data_specs:
       num_event_types: 3
       pad_token_id: 3
@@ -20,8 +20,8 @@ thp_train:
     model_id: THP
     base_dir: './checkpoints/thp_tcn/'
   trainer_config:
-    batch_size: 8
-    max_epoch: 25
+    batch_size: 1
+    max_epoch: 200
     shuffle: False
     optimizer: adam
     learning_rate: 1.e-4
@@ -29,10 +29,10 @@ thp_train:
     use_tfb: True
     metrics: [ 'acc', 'rmse' ]
     seed: 1234
-    tcn_kernel_size: 2
+    tcn_kernel_size: 4
     gpu: 0
   model_config:
-    hidden_size: 128
+    hidden_size: 64
     time_emb_size: 64
     num_layers: 4
     num_heads: 4

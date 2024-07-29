@@ -63,6 +63,7 @@ class THP(TorchBaseModel):
         # print(time_seqs.size())
         tem_enc = self.layer_temporal_encoding(torch.unsqueeze(time_seqs, 1))
         # tem_enc = self.layer_temporal_encoding(time_seqs)
+        # TODO
         enc_output = self.layer_type_emb(type_seqs)
 
         # [batch_size, seq_len, hidden_size]
