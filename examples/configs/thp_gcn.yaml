@@ -3,9 +3,9 @@ pipeline_config_id: runner_config
 data:
   traffic:
     data_format: pkl
-    train_dir: ./data/traffic_week/train.pkl
-    valid_dir: ./data/traffic_week/dev.pkl
-    test_dir: ./data/traffic_week/test.pkl
+    train_dir: ./data/traffic_week_nodes/train.pkl
+    valid_dir: ./data/traffic_week_nodes/dev.pkl
+    test_dir: ./data/traffic_week_nodes/test.pkl
     data_specs:
       num_event_types: 3
       pad_token_id: 3
@@ -18,10 +18,10 @@ thp_train:
     dataset_id: traffic
     runner_id: std_tpp
     model_id: THP
-    base_dir: './checkpoints/FINAL/'
+    base_dir: './checkpoints/thp_gcn/'
   trainer_config:
     batch_size: 8
-    max_epoch: 200
+    max_epoch: 50
     shuffle: False
     optimizer: adam
     learning_rate: 1.e-4

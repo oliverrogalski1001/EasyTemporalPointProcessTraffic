@@ -4,6 +4,8 @@ import torch.nn as nn
 from easy_tpp.model.torch_model.torch_baselayer import EncoderLayer, MultiHeadAttention, TimePositionalEncoding
 from easy_tpp.model.torch_model.torch_basemodel import TorchBaseModel
 from easy_tpp.model.torch_model.gcn import GCN
+from easy_tpp.model.torch_model.graph import GraphGenerator
+
 from easy_tpp.model.torch_model.tcn import TemporalConvNet
 
 class THP(TorchBaseModel):
@@ -27,13 +29,13 @@ class THP(TorchBaseModel):
         self.dropout = model_config.dropout_rate
 
         # self.layer_temporal_encoding = TimePositionalEncoding(self.d_model, device=self.device)
-        self.layer_temporal_encoding = TemporalConvNet(num_inputs=1, num_channels=[self.d_model], kernel_size=4, device=self.device)
+        self.layer_temporal_encoding = TemporalConvNet(num_inputs=1, num_channels=[self.d_model], kernel_size=model_config.tcn_kernel_size, device=self.device)
 
         # graph generator
-        # self.graph_generator = GraphGenerator()
+        self.graph_generator = GraphGenerator()
 
         # gcn
-        # self.gcn = GCN(in_channels=self.d_model, out_channels=self.d_model)
+        self.gcn = GCN(in_channels=self.d_model, out_channels=self.d_model)
 
         self.factor_intensity_base = torch.empty([1, self.num_event_types], device=self.device)
         self.factor_intensity_decay = torch.empty([1, self.num_event_types], device=self.device)
@@ -54,7 +56,7 @@ class THP(TorchBaseModel):
                 dropout=self.dropout
             ) for _ in range(self.n_layers)])
 
-    def forward(self, time_seqs, type_seqs, attention_mask):
+    def forward(self, time_seqs, type_seqs, data_seqs, attention_mask):
         """Call the model
 
         Args:
@@ -69,7 +71,17 @@ class THP(TorchBaseModel):
         # print(time_seqs.size())
         tem_enc = self.layer_temporal_encoding(torch.unsqueeze(time_seqs, 1))
         # tem_enc = self.layer_temporal_encoding(time_seqs)
-        enc_output = self.layer_type_emb(type_seqs)
+        # TODO
+        # enc_output = self.layer_type_emb(type_seqs)
+        enc_output = torch.zeros()
+        for i in range(time_seqs):
+            weekday = time_seqs[i] // 24
+            hour = time_seqs[i] % 24
+            graph = self.graph_generator.compute_node_connectivity_matrix_knn(weekday, hour).to(self.device)
+        
+        node = torch.tensor(data_seqs[i], dtype=torch.float32).to(self.device)
+
+        enc_output = self.gcn()
 
         # [batch_size, seq_len, hidden_size]
         for enc_layer in self.stack_layers:
@@ -89,11 +101,11 @@ class THP(TorchBaseModel):
         Returns:
             tuple: loglike loss, num events.
         """
-        time_seqs, time_delta_seqs, type_seqs, batch_non_pad_mask, attention_mask, type_mask = batch
+        time_seqs, time_delta_seqs, type_seqs, data_seqs, batch_non_pad_mask, attention_mask, type_mask = batch
 
         # 1. compute event-loglik
         # [batch_size, seq_len, hidden_size]
-        enc_out = self.forward(time_seqs[:, :-1], type_seqs[:, :-1], attention_mask[:, 1:, :-1])
+        enc_out = self.forward(time_seqs[:, :-1], type_seqs[:, :-1], data_seqs[:, :-1], attention_mask[:, 1:, :-1])
 
         # [batch_size, seq_len, num_event_types]
         # update time decay based on Equation (6)

@@ -15,6 +15,7 @@ class TPPDataset(Dataset):
         self.time_seqs = self.data_dict['time_seqs']
         self.time_delta_seqs = self.data_dict['time_delta_seqs']
         self.type_seqs = self.data_dict['type_seqs']
+        self.data_seqs = self.data_dict.get('data_seqs', None)
 
     def __len__(self):
         """

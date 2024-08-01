@@ -30,10 +30,12 @@ def main():
     time_seqs = [[x["time_since_start"] for x in seq] for seq in source_data]
     type_seqs = [[x["type_event"] for x in seq] for seq in source_data]
     time_delta_seqs = [[x["time_since_last_event"] for x in seq] for seq in source_data]
+    data_seqs = [[x["data"] for x in seq] for seq in source_data]
 
     input_data = {'time_seqs': time_seqs,
                   'type_seqs': type_seqs,
-                  'time_delta_seqs': time_delta_seqs}
+                  'time_delta_seqs': time_delta_seqs,
+                  'data_seqs': data_seqs}
 
     config = DataSpecConfig.parse_from_yaml_config({'num_event_types': 11, 'batch_size': 1,
                                                     'pad_token_id': 11})

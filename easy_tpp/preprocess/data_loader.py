@@ -28,6 +28,7 @@ class TPPDataLoader:
         time_seqs = [[x["time_since_start"] for x in seq] for seq in source_data]
         type_seqs = [[x["type_event"] for x in seq] for seq in source_data]
         time_delta_seqs = [[x["time_since_last_event"] for x in seq] for seq in source_data]
+        data_seqs = [[x.get("data", None) for x in seq] for seq in source_data]
 
         input_dict = dict({'time_seqs': time_seqs, 'time_delta_seqs': time_delta_seqs, 'type_seqs': type_seqs})
         return input_dict
@@ -50,6 +51,7 @@ class TPPDataLoader:
         time_seqs = data['time_since_start']
         type_seqs = data['type_event']
         time_delta_seqs = data['time_since_last_event']
+        data_seqs = data.get('data', None)
 
         input_dict = dict({'time_seqs': time_seqs, 'time_delta_seqs': time_delta_seqs, 'type_seqs': type_seqs})
         return input_dict
